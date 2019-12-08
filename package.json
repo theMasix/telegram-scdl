@@ -5,7 +5,7 @@
   "main": "bot.js",
   "scripts": {
     "start": "node ./public/bot.js",
-    "build": "npm install"
+    "build": "npm install && node ./public/bot.js"
   },
   "repository": {
     "type": "git",
