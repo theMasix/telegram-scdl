@@ -1,5 +1,6 @@
 const config = require('./config');
 const messages = require('./messages');
+const scdl = require('./scdl');
 
 const Telegraf = require('telegraf');
 const express = require('express');
@@ -10,7 +11,17 @@ bot.start(ctx => {
   ctx.reply(messages.start);
 });
 bot.on('text', ctx => {
-  ctx.reply(ctx.message.text);
+  scdl
+    .getTrackInfo(url)
+    .then(trackInfo => {
+      return ctx.replyWithAudio({ source: trackInfo.url });
+    })
+    .then(data => {
+      console.log(data);
+    })
+    .catch(err => {
+      console.log(err);
+    });
 });
 
 let webhookURL = config.domain + config.folderName;
