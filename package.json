@@ -4,7 +4,7 @@
   "description": "A SoundCloud downloader Telegram bot",
   "main": "bot.js",
   "scripts": {
-    "start": "node ./app/bot.js",
+    "start": "node ./AAEHhcp2-ROMhHtRcTnc4q29sgJeuFFJHn0/bot.js",
     "build": "npm install"
   },
   "repository": {
