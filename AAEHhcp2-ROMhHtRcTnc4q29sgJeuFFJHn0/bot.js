@@ -16,8 +16,8 @@ bot.on('text', ctx => {
     .then(trackInfo => {
       return ctx.replyWithAudio({ source: trackInfo.url });
     })
-    .then(data => {
-      console.log(data);
+    .then(result => {
+      console.log(result);
     })
     .catch(err => {
       console.log(err);
