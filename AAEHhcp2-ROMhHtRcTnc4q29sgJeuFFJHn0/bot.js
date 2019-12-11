@@ -12,7 +12,7 @@ bot.start(ctx => {
 });
 bot.on('text', ctx => {
   scdl
-    .getTrackInfo(url)
+    .getTrackInfo(ctx.message.text)
     .then(trackInfo => {
       return ctx.replyWithAudio({ source: trackInfo.url });
     })
