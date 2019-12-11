@@ -4,8 +4,8 @@
   "description": "A SoundCloud downloader Telegram bot",
   "main": "bot.js",
   "scripts": {
-    "start": "node ./public/bot.js",
-    "build": "npm install && node ./public/bot.js"
+    "start": "node ./app/bot.js",
+    "build": "npm install && node ./app/bot.js"
   },
   "repository": {
     "type": "git",
@@ -13,16 +13,11 @@
   },
   "author": "MasihIT",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/MasihIT/telegram-scdl/issues"
-  },
-  "homepage": "https://github.com/MasihIT/telegram-scdl#readme",
   "dependencies": {
     "dotenv": "^8.2.0",
     "telegraf": "^3.34.1"
   },
   "engines": {
-    "node": "10.16.0",
-    "npm": "6.10.x"
+    "node": "10.16.0"
   }
 }
