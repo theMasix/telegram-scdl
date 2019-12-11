@@ -11,3 +11,5 @@ bot.start(ctx => {
   ctx.reply('Welcome');
 });
 bot.launch();
+
+console.log('Bot is working!');
