@@ -20,5 +20,8 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "telegraf": "^3.34.1"
+  },
+  "engines": {
+    "node": "10.16.0"
   }
 }
