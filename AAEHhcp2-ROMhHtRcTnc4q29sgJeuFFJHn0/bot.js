@@ -10,7 +10,7 @@ bot.start(ctx => {
   ctx.reply(messages.start);
 });
 bot.on('text', ctx => {
-  ctx.reply(ctx.reply(ctx.message));
+  ctx.reply(ctx.message);
 });
 
 let webhookURL = config.domain + config.folderName;
