@@ -1,4 +1,5 @@
 const config = require('./config');
+const messages = require('./messages');
 
 const Telegraf = require('telegraf');
 const express = require('express');
@@ -6,7 +7,10 @@ const express = require('express');
 const bot = new Telegraf(config.apiToken);
 // Set the bot response
 bot.start(ctx => {
-  ctx.reply('Hello Masih');
+  ctx.reply(messages.start);
+});
+bot.on('text', ctx => {
+  ctx.reply(ctx.reply(ctx.message));
 });
 
 let webhookURL = config.domain + config.folderName;
