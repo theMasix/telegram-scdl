@@ -24,6 +24,9 @@ scdl.getTrackInfo = url => {
       };
       return resolve(result);
     });
+    process.on('error', err => {
+      console.log(err);
+    });
   });
 };
 
