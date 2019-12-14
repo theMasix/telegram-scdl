@@ -11,9 +11,6 @@ scdl.getTrackInfo = url => {
     let buffer = '';
     process.stdout.on('data', data => {
       buffer += decoder.write(data);
-      // console.log('data ' + buffer);
-    });
-    process.stdout.on('end', () => {
       buffer += decoder.end();
       console.log('end ' + buffer);
       let parse = JSON.parse(buffer);
@@ -26,6 +23,7 @@ scdl.getTrackInfo = url => {
       };
       return resolve(result);
     });
+    // process.stdout.on('end', () => {});
 
     process.on('error', err => {
       reject(err);
