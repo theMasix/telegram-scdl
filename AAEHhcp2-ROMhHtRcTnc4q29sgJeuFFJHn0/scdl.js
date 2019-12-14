@@ -12,7 +12,7 @@ scdl.getTrackInfo = url => {
       let buffer = '';
       process.stdout.on('data', data => {
         buffer += decoder.write(data);
-        console.log('data ' + buffer);
+        // console.log('data ' + buffer);
       });
       process.stdout.on('end', () => {
         buffer += decoder.end();
