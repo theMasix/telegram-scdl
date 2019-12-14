@@ -5,35 +5,31 @@ let { spawn } = require('child_process');
 let scdl = {};
 scdl.getTrackInfo = url => {
   return new Promise((resolve, reject) => {
-    try {
-      let options = ['-o', '%(uploader)s - %(title)s.%(ext)s', '-j', url];
-      let process = spawn('youtube-dl', options);
+    let options = ['-o', '%(uploader)s - %(title)s.%(ext)s', '-j', url];
+    let process = spawn('youtube-dl', options);
 
-      let buffer = '';
-      process.stdout.on('data', data => {
-        buffer += decoder.write(data);
-        // console.log('data ' + buffer);
-      });
-      process.stdout.on('end', () => {
-        buffer += decoder.end();
-        console.log('end ' + buffer);
-        let parse = JSON.parse(buffer);
-        let trackName = parse.uploader + ' - ' + parse.fulltitle;
+    let buffer = '';
+    process.stdout.on('data', data => {
+      buffer += decoder.write(data);
+      // console.log('data ' + buffer);
+    });
+    process.stdout.on('end', () => {
+      buffer += decoder.end();
+      console.log('end ' + buffer);
+      let parse = JSON.parse(buffer);
+      let trackName = parse.uploader + ' - ' + parse.fulltitle;
 
-        let result = {
-          url: parse.url,
-          trackName: trackName,
-          thumbnail: parse.thumbnail
-        };
-        return resolve(result);
-      });
+      let result = {
+        url: parse.url,
+        trackName: trackName,
+        thumbnail: parse.thumbnail
+      };
+      return resolve(result);
+    });
 
-      process.on('error', err => {
-        console.log(err);
-      });
-    } catch (err) {
-      console.log(err);
-    }
+    process.on('error', err => {
+      reject(err);
+    });
   });
 };
 
