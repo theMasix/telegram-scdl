@@ -3,6 +3,8 @@ const messages = require('./messages');
 const scdl = require('./scdl');
 const Telegraf = require('telegraf');
 
+console.log(config.apiToken);
+
 const bot = new Telegraf(config.apiToken);
 // Set the bot response
 bot.start(ctx => {
