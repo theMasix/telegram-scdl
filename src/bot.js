@@ -1,3 +1,4 @@
+const config = require('./config');
 const messages = require('./messages');
 const scdl = require('./scdl');
 const Telegraf = require('telegraf');
