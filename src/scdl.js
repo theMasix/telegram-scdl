@@ -10,9 +10,9 @@ scdl.getTrackInfo = url => {
 
     let buffer = '';
     process.stdout.on('data', data => {
+      // console.log('data');
       buffer += decoder.write(data);
       buffer += decoder.end();
-      console.log('end ' + buffer);
       let parse = JSON.parse(buffer);
       let trackName = parse.uploader + ' - ' + parse.fulltitle;
 
@@ -23,7 +23,9 @@ scdl.getTrackInfo = url => {
       };
       return resolve(result);
     });
-    // process.stdout.on('end', () => {});
+    process.stdout.on('end', () => {
+      // console.log('end');
+    });
 
     process.on('error', err => {
       reject(err);
