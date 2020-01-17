@@ -3,8 +3,6 @@ const messages = require('./messages');
 const scdl = require('./scdl');
 const Telegraf = require('telegraf');
 
-console.log(config.apiToken);
-
 const bot = new Telegraf(config.apiToken);
 // Set the bot response
 bot.start(ctx => {
@@ -29,3 +27,5 @@ let webhookURL = config.domain + config.folderName;
 // npm install -g localtunnel && lt --port 3000
 bot.telegram.setWebhook(webhookURL);
 console.log(`webhook has set to ${webhookURL}`);
+
+module.exports = bot;
