@@ -22,7 +22,8 @@ bot.on('text', ctx => {
     });
 });
 
-let webhookURL = config.domain + config.folderName;
+// let webhookURL = config.domain + `:` + config.port + config.folderName;
+let webhookURL = config.domain + `:` + config.port;
 // Set telegram webhook
 // npm install -g localtunnel && lt --port 3000
 bot.telegram.setWebhook(webhookURL);

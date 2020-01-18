@@ -14,5 +14,5 @@ app.use(bot.webhookCallback('/' + config.folderName));
 
 const server = https.createServer({ key: key, cert: cert }, app);
 server.listen(config.port, () => {
-  console.log(`listening on ${config.port}`);
+  console.log(`https server is listening on ${config.port}`);
 });
