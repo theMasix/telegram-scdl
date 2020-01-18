@@ -16,6 +16,7 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "is-url": "^1.2.4",
     "telegraf": "^3.34.1"
   },
   "engines": {

@@ -2,6 +2,7 @@ const config = require('./config');
 const messages = require('./messages');
 const scdl = require('./scdl');
 const Telegraf = require('telegraf');
+const isURL = require('is-url');
 
 const bot = new Telegraf(config.apiToken);
 // Set the bot response
@@ -9,8 +10,13 @@ bot.start(ctx => {
   ctx.reply(messages.start);
 });
 bot.on('text', ctx => {
+  let userMessage = ctx.message.text;
+
+  if (!isURL(userMessage)) return console.log('this was not url');
+
+  // If the message was url
   scdl
-    .getTrackInfo(ctx.message.text)
+    .getTrackInfo(userMessage)
     .then(trackInfo => {
       return ctx.replyWithAudio({ source: trackInfo.url });
     })
