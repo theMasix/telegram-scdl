@@ -1,0 +1,16 @@
+kind: ExternalService
+name: telegram-scdl
+spec:
+  # path
+  image: telegram-scdl:1.0.5
+  allow_http: false
+  port: 8080
+  env:
+    - name: API_TOKEN
+      secret: api-token
+    - name: PORT
+      value: 8080
+    - name: DOMAIN
+      secret: domain
+    - name: ROUTING_ADDRESS
+      secret: routing-address

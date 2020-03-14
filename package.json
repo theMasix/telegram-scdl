@@ -1,17 +1,16 @@
 {
   "name": "telegram-scdl",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "A SoundCloud downloader Telegram bot",
   "main": "bot.js",
   "scripts": {
-    "start": "node ./AAEHhcp2-ROMhHtRcTnc4q29sgJeuFFJHn0/bot.js",
-    "build": "npm install"
+    "start": "node ./src/server.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MasihIT/telegram-scdl.git"
+    "url": "git+https://github.com/TheMasix/telegram-scdl.git"
   },
-  "author": "MasihIT",
+  "author": "TheMasix",
   "license": "MIT",
   "dependencies": {
     "dotenv": "^8.2.0",

@@ -12,26 +12,38 @@ bot.start(ctx => {
 bot.on('text', ctx => {
   let userMessage = ctx.message.text;
 
-  if (!isURL(userMessage)) return console.log('this was not url');
+  if (!isURL(userMessage)) {
+    ctx.reply('This is not a valid soundcloud url.');
+    return console.log(`${userMessage} was not valid url.`);
+  }
 
   // If the message was url
-  scdl
-    .getTrackInfo(userMessage)
-    .then(trackInfo => {
-      return ctx.replyWithAudio({ source: trackInfo.url });
-    })
-    .then(result => {
-      console.log(result);
-    })
-    .catch(err => {
-      console.log(err);
-    });
+  try {
+    ctx.reply('start process');
+    scdl
+      .getTrackInfo(userMessage)
+      .then(trackInfo => {
+        ctx.reply('process 1');
+        return ctx.replyWithAudio({ source: trackInfo.url });
+      })
+      .then(result => {
+        ctx.reply('process 2');
+        console.log(result);
+      })
+      .catch(err => {
+        ctx.reply('an Error occured in getting trackinfo:');
+        ctx.replyWithMarkdown(err);
+        console.log(err);
+      });
+  } catch (e) {
+    ctx.reply('catch scope');
+    console.log(e.message);
+  }
 });
 
-// let webhookURL = config.domain + `:` + config.port + config.folderName;
-let webhookURL = config.domain + `:` + config.port;
+let webhookURL = config.domain + config.routingAddress;
+
 // Set telegram webhook
-// npm install -g localtunnel && lt --port 3000
 bot.telegram.setWebhook(webhookURL);
 console.log(`webhook has set to ${webhookURL}`);
 

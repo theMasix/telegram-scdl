@@ -4,7 +4,7 @@ dotenv.config();
 let config = {
   apiToken: process.env.API_TOKEN,
   port: process.env.PORT,
-  folderName: 'src',
+  routingAddress: process.env.ROUTING_ADDRESS,
   domain: process.env.DOMAIN
 };
 
