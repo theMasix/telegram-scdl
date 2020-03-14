@@ -5,7 +5,7 @@ let { spawn } = require('child_process');
 let scdl = {};
 scdl.getTrackInfo = url => {
   return new Promise((resolve, reject) => {
-    // let options = ['-o', '%(uploader)s - %(title)s.%(ext)s', '-j', url];
+    let options = ['-o', '%(uploader)s - %(title)s.%(ext)s', '-j', url];
     let process = spawn('youtube-dl', options);
 
     let buffer = '';
