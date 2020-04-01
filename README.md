@@ -14,16 +14,19 @@ I deployed the app on Fandogh PaaS. You can do it too!
 
 ---
 
-- Step 1 (Create project on fandogh):
+- Step 1 (Create project on Fandogh):
 
   `fandogh image init --name <your-project-name>`
 
-- Step 2 (send Dockerfile to fandogh and build the image):
+- Step 2 (send Dockerfile to Fandogh and build the image):
 
   `fandogh image publish --version <your-app-version>`
 
 - Step 3:
   create `fandogh.yaml` and put your deploy conventions
+
+  You can see [Fandogh Manifest Doc](http://github.com)
+
 - Step 4 (deploy the app):
 
   `fandogh service apply -f fandogh.yaml`
@@ -34,7 +37,7 @@ I deployed the app on Fandogh PaaS. You can do it too!
 
 - Step 1:
   Update your package.json to new app version
-- Step 2 (send Dockerfile to fandogh create new image):
+- Step 2 (send Dockerfile to fandogh creates new image):
 
   `fandogh image publish --version <your-app-new-version>`
 

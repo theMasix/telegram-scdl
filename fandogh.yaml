@@ -2,7 +2,7 @@ kind: ExternalService
 name: telegram-scdl
 spec:
   # path
-  image: telegram-scdl:1.0.5
+  image: telegram-scdl:1.1.2
   allow_http: false
   port: 8080
   env:
@@ -11,6 +11,6 @@ spec:
     - name: PORT
       value: 8080
     - name: DOMAIN
-      secret: domain
+      value: https://telegram-scdl-masihit.fandogh.cloud/
     - name: ROUTING_ADDRESS
       secret: routing-address

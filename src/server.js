@@ -3,9 +3,19 @@ const bot = require('./bot');
 const express = require('express');
 
 const app = express();
-app.get('/', (req, res) => {
-  console.log('packet recieved!');
-  res.send('It just works!');
+app.get('/download/:filename', (req, res) => {
+  let filename = req.params.filename;
+  const fileAddress = `/home/node/app/${filename}`;
+  try {
+    res.download(fileAddress, err => {
+      if (err) {
+        console.log(err.message);
+      }
+      res.end();
+    });
+  } catch (e) {
+    console.log(e.message);
+  }
 });
 // Set the bot API endpoint
 app.use(bot.webhookCallback('/' + config.routingAddress));
