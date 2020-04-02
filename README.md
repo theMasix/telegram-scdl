@@ -4,7 +4,9 @@ A Telegram SoundCloud Downloader Bot using NodeJS.
 
 It's built on top of the [Telegraf](http://github.com/telegraf/telegraf) and [MongoDB](https://github.com/mongodb/mongo).
 
-## Install
+Use it on Telegram at [SoundCloud Downloader Bot](http://t.me/scdl_bot)
+
+## Install and Development
 
 to run bot, first config your `.src/config.js` and `.env` file. Then you can run `npm start`
 
