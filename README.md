@@ -1,6 +1,6 @@
 # telegram-scdl
 
-A Telegram Sound Cloud Bot using NodeJS.
+A Telegram SoundCloud Downloader Bot using NodeJS.
 
 It's built on top of the [Telegraf](http://github.com/telegraf/telegraf) and [MongoDB](https://github.com/mongodb/mongo).
 
