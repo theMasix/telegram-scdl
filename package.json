@@ -1,6 +1,6 @@
 {
   "name": "telegram-scdl",
-  "version": "1.1.2",
+  "version": "1.1.0",
   "description": "A SoundCloud downloader Telegram bot",
   "main": "bot.js",
   "scripts": {
@@ -15,9 +15,10 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "is-url": "^1.2.4",
     "m3u8stream": "^0.6.5",
-    "telegraf": "^3.34.1"
+    "mongoose": "^5.9.7",
+    "telegraf": "^3.34.1",
+    "url-parse": "^1.4.7"
   },
   "engines": {
     "node": "10.16.0"

@@ -2,31 +2,79 @@ const config = require('./config');
 const messages = require('./messages');
 const scdl = require('./scdl');
 const Telegraf = require('telegraf');
-const isURL = require('is-url');
+const urlParse = require('url-parse');
 const m3u8stream = require('m3u8stream');
 const fs = require('fs');
+const UserModel = require('./database/usermodel');
+
+// TODO: delete track after sending to telegram
+// There is no music after sending it to user! don't know why ...
 
 let webhookURL = config.domain + config.routingAddress;
 
-const bot = new Telegraf(config.apiToken);
+const bot = new Telegraf(config.apiToken, {
+  // If I delete the webhookReply: false then the first ctx reply in on('text') method would return something else than telegram message
+  // For more information see:  https://github.com/telegraf/telegraf/issues/784
+  telegram: { webhookReply: false }
+});
 // Set the bot response
 bot.start(ctx => {
   ctx.reply(messages.start);
+
+  let user = ctx.chat;
+
+  // Creating User or updating the updatedAt
+  let userData = {
+    chat_id: user.id,
+    username: user.username,
+    name: user.first_name,
+    updatedAt: new Date()
+  };
+  let updateOptions = {
+    upsert: true,
+    new: true,
+    setDefaultsOnInsert: true
+  };
+  UserModel.findOneAndUpdate(
+    { chat_id: user.id },
+    userData,
+    updateOptions
+  ).catch(err => {
+    console.error(err.message);
+  });
 });
-bot.on('text', ctx => {
+bot.on('text', async ctx => {
   let userMessage = ctx.message.text;
   let lastMessage = null;
+  let userData = null;
 
-  if (!isURL(userMessage)) {
-    ctx.reply('This is not a valid soundcloud url.');
-    return console.log(`${userMessage} was not valid url.`);
-  }
+  let user = ctx.chat;
 
-  // If I comment this, then the next ctx.reply won't work!
-  ctx.reply('process is starting ...');
-
-  // If the message was url
   try {
+    // Update user data and track urls in database
+    let updateTrackUrls = {
+      chat_id: user.id,
+      username: user.username,
+      name: user.first_name,
+      updatedAt: new Date(),
+      $push: {
+        trackUrls: {
+          trackLink: userMessage, // This is the url that user provided
+          date: new Date()
+        }
+      }
+    };
+    await UserModel.findOneAndUpdate({ chat_id: user.id }, updateTrackUrls);
+
+    // Checking the url
+    if (urlParse(userMessage).hostname !== 'soundcloud.com') {
+      ctx.reply('This is not a valid soundcloud url.');
+      return console.log(`${userMessage} was not valid url.`);
+    }
+
+    // See comment on telegraf consturctor
+    let lastMessage = await ctx.reply('process is starting ...');
+
     scdl
       .getTrackInfo(userMessage)
       .then(trackInfo => {
@@ -57,7 +105,10 @@ bot.on('text', ctx => {
               fs.createWriteStream(`./${musicName}`)
             );
             download.on('open', async () => {
-              lastMessage = await ctx.reply(
+              lastMessage = await ctx.telegram.editMessageText(
+                lastMessage.chat.id,
+                lastMessage.message_id,
+                undefined,
                 'downloading track(s) to our servers.'
               );
             });
@@ -73,7 +124,7 @@ bot.on('text', ctx => {
           }
         });
       })
-      .then(trackInfo => {
+      .then(async trackInfo => {
         if (lastMessage) {
           lastMessage = ctx.telegram.editMessageText(
             lastMessage.chat.id,
@@ -85,17 +136,30 @@ bot.on('text', ctx => {
           ctx.reply('Enjoy! here is your track:');
         }
         // Send to user
-        ctx.replyWithAudio({
+        await ctx.replyWithAudio({
           url: trackInfo.downloadLink,
           filename: trackInfo.fullTitle
         });
+      })
+      .then(() => {
+        // Update downloaded track count (secceed delivered track)
+        let updateDownloadedTrack = {
+          updatedAt: new Date(),
+          $inc: {
+            downloadedTracks: 1
+          }
+        };
+        return UserModel.findOneAndUpdate(
+          { chat_id: user.id },
+          updateDownloadedTrack
+        );
       })
       .catch(err => {
         ctx.reply(err.meesage);
         console.log(err.message);
       });
   } catch (e) {
-    ctx.reply('catch scope');
+    ctx.reply('an Error occured');
     console.log(e.message);
   }
 });

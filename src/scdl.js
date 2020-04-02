@@ -18,7 +18,8 @@ scdl.getTrackInfo = url => {
         let trackName = parse.uploader + ' - ' + parse.fulltitle;
 
         let result = {
-          url: parse.url,
+          scUrl: url, // url that user provided
+          url: parse.url, // Comes from youtube-dl
           downloadLink: '',
           trackName: trackName,
           thumbnail: parse.thumbnail,
