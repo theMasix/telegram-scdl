@@ -12,7 +12,7 @@ to run bot, first config your `.src/config.js` and `.env` file. Then you can run
 
 ## Deployment
 
-I deployed the app on Fandogh PaaS. You can do it too!
+I deployed the app on [Fandogh Cloud](https://fandogh.cloud/) PaaS. You can do it too!
 
 ### Fandogh First Deployment
 
