@@ -1,10 +1,12 @@
 # telegram-scdl
 
-A Telegram Sound Cloud Bot using NodeJS
+A Telegram Sound Cloud Bot using NodeJS.
+
+It's built on top of the [Telegraf](http://github.com/telegraf/telegraf) and [MongoDB](https://github.com/mongodb/mongo).
 
 ## Install
 
-to run bot, first config your `.src/config.js` and generate you key and cert then run `node run ./src/server.js`
+to run bot, first config your `.src/config.js` and `.env` file. Then you can run `npm start`
 
 ## Deployment
 
