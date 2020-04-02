@@ -10,7 +10,7 @@ const UserModel = require('./database/usermodel');
 // TODO: delete track after sending to telegram
 // There is no music after sending it to user! don't know why ...
 
-// TOOD: extract link from shared soundcloud link
+// TOOD: grab and send all messages from messages.js
 
 let webhookURL = config.domain + config.routingAddress;
 
@@ -48,13 +48,8 @@ bot.start(ctx => {
 bot.on('text', async ctx => {
   let userMessage = ctx.message.text;
   let lastMessage = null;
-  let userData = null;
 
   let user = ctx.chat;
-
-  // Extract exact track link from user message for further usage. also it'll save on Database
-  const extractLinkRegex = /(http(s)?:\/\/)?(m\.)?soundcloud\.com(.*)/i;
-  let trackLink = userMessage.match(extractLinkRegex)[0];
 
   try {
     // Update user data and track urls in database
@@ -65,19 +60,24 @@ bot.on('text', async ctx => {
       updatedAt: new Date(),
       $push: {
         trackUrls: {
-          trackLink: trackLink, // This is the url that user provided
+          trackLink: userMessage, // This is the raw message that user provided
           date: new Date()
         }
       }
     };
     await UserModel.findOneAndUpdate({ chat_id: user.id }, updateTrackUrls);
 
+    // Extract exact track link from user message for further usage. also it'll save on Database
+    const extractLinkRegex = /(http(s)?:\/\/)?(m\.)?soundcloud\.com(\S*)/i;
+    let extractLink = userMessage.match(extractLinkRegex);
+
     // Checking the url
-    let hostname = urlParse(trackLink).hostname;
-    if (hostname !== 'soundcloud.com' && hostname !== 'm.soundcloud.com') {
-      ctx.reply('This is not a valid soundcloud url.');
-      return console.log(`${trackLink} was not valid url.`);
+    if (!extractLink) {
+      ctx.reply('Your sent message contains no valid soundcloud url.');
+      return console.log(`${userMessage} contains no valid track URL`);
     }
+    // Now we can get the exact url
+    let trackLink = extractLink[0];
 
     // See comment on telegraf consturctor
     lastMessage = await ctx.reply('process is starting ...');
