@@ -17,8 +17,7 @@
     "express": "^4.17.1",
     "m3u8stream": "^0.6.5",
     "mongoose": "^5.9.7",
-    "telegraf": "^3.34.1",
-    "url-parse": "^1.4.7"
+    "telegraf": "^3.34.1"
   },
   "engines": {
     "node": "10.16.0"

@@ -2,13 +2,12 @@ const config = require('./config');
 const messages = require('./messages');
 const scdl = require('./scdl');
 const Telegraf = require('telegraf');
-const urlParse = require('url-parse');
-const m3u8stream = require('m3u8stream');
 const fs = require('fs');
+const m3u8stream = require('m3u8stream');
 const UserModel = require('./database/usermodel');
 
 // TODO: delete track after sending to telegram
-// There is no music after sending it to user! don't know why ...
+// There is no music after sending it to user! I don't know why ...
 
 // TOOD: grab and send all messages from messages.js
 
