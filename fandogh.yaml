@@ -2,7 +2,7 @@ kind: ExternalService
 name: telegram-scdl
 spec:
   # path
-  image: telegram-scdl:1.1.43
+  image: telegram-scdl:1.2
   allow_http: false
   port: 8080
   env:
