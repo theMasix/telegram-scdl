@@ -67,7 +67,8 @@ bot.on('text', async ctx => {
     await UserModel.findOneAndUpdate({ chat_id: user.id }, updateTrackUrls);
 
     // Checking the url
-    if (urlParse(userMessage).hostname !== 'soundcloud.com') {
+    let hostname = urlParse(userMessage).hostname;
+    if (hostname !== 'soundcloud.com' && hostname !== 'm.soundcloud.com') {
       ctx.reply('This is not a valid soundcloud url.');
       return console.log(`${userMessage} was not valid url.`);
     }
