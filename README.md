@@ -50,3 +50,9 @@ I deployed the app on [Fandogh Cloud](https://fandogh.cloud/) PaaS. You can do i
 - Step 4 (redeploy app with new image):
 
   `fandogh service apply -f fandogh.yaml`
+
+### License
+
+---
+
+Code released under the [MIT License](http://github.com/themasix/telegram-scdl/blob/master/LICENSE).
