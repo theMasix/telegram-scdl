@@ -10,6 +10,8 @@ const UserModel = require('./database/usermodel');
 // TODO: delete track after sending to telegram
 // There is no music after sending it to user! don't know why ...
 
+// TOOD: extract link from shared soundcloud link
+
 let webhookURL = config.domain + config.routingAddress;
 
 const bot = new Telegraf(config.apiToken, {
@@ -50,6 +52,10 @@ bot.on('text', async ctx => {
 
   let user = ctx.chat;
 
+  // Extract exact track link from user message for further usage. also it'll save on Database
+  const extractLinkRegex = /(http(s)?:\/\/)?(m\.)?soundcloud\.com(.*)/i;
+  let trackLink = userMessage.match(extractLinkRegex)[0];
+
   try {
     // Update user data and track urls in database
     let updateTrackUrls = {
@@ -59,7 +65,7 @@ bot.on('text', async ctx => {
       updatedAt: new Date(),
       $push: {
         trackUrls: {
-          trackLink: userMessage, // This is the url that user provided
+          trackLink: trackLink, // This is the url that user provided
           date: new Date()
         }
       }
@@ -67,17 +73,17 @@ bot.on('text', async ctx => {
     await UserModel.findOneAndUpdate({ chat_id: user.id }, updateTrackUrls);
 
     // Checking the url
-    let hostname = urlParse(userMessage).hostname;
+    let hostname = urlParse(trackLink).hostname;
     if (hostname !== 'soundcloud.com' && hostname !== 'm.soundcloud.com') {
       ctx.reply('This is not a valid soundcloud url.');
-      return console.log(`${userMessage} was not valid url.`);
+      return console.log(`${trackLink} was not valid url.`);
     }
 
     // See comment on telegraf consturctor
-    let lastMessage = await ctx.reply('process is starting ...');
+    lastMessage = await ctx.reply('process is starting ...');
 
     scdl
-      .getTrackInfo(userMessage)
+      .getTrackInfo(trackLink)
       .then(trackInfo => {
         return new Promise(resolve => {
           // let musicName = `${trackInfo.fullTitle}.mp3`;
