@@ -6,7 +6,6 @@ const Telegraf = require('telegraf');
 
 const userActions = require('./database/userActions');
 
-// TODO: delete track after sending to telegram
 // TODO: grab and send all messages from messages.js
 // TODO: sending file larger than 50MB IMPORTANT
 
