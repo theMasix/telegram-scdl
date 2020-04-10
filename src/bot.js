@@ -73,7 +73,7 @@ bot.on('text', async ctx => {
         lastMessage.chat.id,
         lastMessage.message_id,
         undefined,
-        'downloading track(s) to our servers ...'
+        'downloading track to our servers ...'
       );
 
       await utils.downloadPlaylistLocally(trackInfo.url, musicName);
@@ -111,7 +111,7 @@ bot.on('text', async ctx => {
           lastMessage.chat.id,
           lastMessage.message_id,
           undefined,
-          'Long Musics can only be downloaded via the direct link.',
+          'Large file size tracks can only be downloaded via the direct link.',
           Extra.markup(keyboard)
         );
 
