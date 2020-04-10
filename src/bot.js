@@ -1,48 +1,31 @@
 const config = require('./config');
-const messages = require('./messages');
 const scdl = require('./scdl');
+const messages = require('./messages');
+const utils = require('./utils');
 const Telegraf = require('telegraf');
-const fs = require('fs');
-const m3u8stream = require('m3u8stream');
-const UserModel = require('./database/usermodel');
+
+const userActions = require('./database/userActions');
 
 // TODO: delete track after sending to telegram
-// There is no music after sending it to user! I don't know why ...
-
-// TOOD: grab and send all messages from messages.js
+// TODO: grab and send all messages from messages.js
+// TODO: sending file larger than 50MB IMPORTANT
 
 let webhookURL = config.domain + config.routingAddress;
 
 const bot = new Telegraf(config.apiToken, {
   // If I delete the webhookReply: false then the first ctx reply in on('text') method would return something else than telegram message
   // For more information see:  https://github.com/telegraf/telegraf/issues/784
-  telegram: { webhookReply: false }
+  telegram: {
+    webhookReply: false
+  }
 });
 // Set the bot response
-bot.start(ctx => {
+bot.start(async ctx => {
+  let user = ctx.chat;
   ctx.reply(messages.start);
 
-  let user = ctx.chat;
-
   // Creating User or updating the updatedAt
-  let userData = {
-    chat_id: user.id,
-    username: user.username,
-    name: user.first_name,
-    updatedAt: new Date()
-  };
-  let updateOptions = {
-    upsert: true,
-    new: true,
-    setDefaultsOnInsert: true
-  };
-  UserModel.findOneAndUpdate(
-    { chat_id: user.id },
-    userData,
-    updateOptions
-  ).catch(err => {
-    console.error(err.message);
-  });
+  await userActions.createUser(user);
 });
 bot.on('text', async ctx => {
   let userMessage = ctx.message.text;
@@ -50,122 +33,75 @@ bot.on('text', async ctx => {
 
   let user = ctx.chat;
 
+  if (user.id != 87679709) {
+    console.log(`${user.id} messaged`);
+    await ctx.reply('The Bot is being repaired. Please come back tommorow');
+    return;
+  }
+
   try {
-    // Update user data and track urls in database
-    let updateTrackUrls = {
-      chat_id: user.id,
-      username: user.username,
-      name: user.first_name,
-      updatedAt: new Date(),
-      $push: {
-        trackUrls: {
-          trackLink: userMessage, // This is the raw message that user provided
-          date: new Date()
-        }
-      }
-    };
-    await UserModel.findOneAndUpdate({ chat_id: user.id }, updateTrackUrls);
+    await userActions.insertNewMessage(user, userMessage);
 
-    // Extract exact track link from user message for further usage. also it'll save on Database
-    const extractLinkRegex = /(http(s)?:\/\/)?(m\.)?soundcloud\.com(\S*)/i;
-    let extractLink = userMessage.match(extractLinkRegex);
+    // Checking the url to be valid
+    let trackLink = utils.extractTrackLink(userMessage);
 
-    // Checking the url
-    if (!extractLink) {
+    if (!trackLink) {
       ctx.reply('Your sent message contains no valid soundcloud url.');
       return console.log(`${userMessage} contains no valid track URL`);
     }
-    // Now we can get the exact url
-    let trackLink = extractLink[0];
 
     // See comment on telegraf consturctor
     lastMessage = await ctx.reply('process is starting ...');
 
-    scdl
-      .getTrackInfo(trackLink)
-      .then(trackInfo => {
-        return new Promise(resolve => {
-          // let musicName = `${trackInfo.fullTitle}.mp3`;
-          // Create random name
-          let musicName = `${Math.floor(Math.random() * 1000)}.mp3`;
+    let trackInfo = await scdl.getTrackInfo(trackLink);
 
-          playlistRegex = /playlist/gi;
-          isURLPlaylist = playlistRegex.test(trackInfo.url);
+    let isURLPlaylist = utils.isURLPlaylist(trackInfo.url);
 
-          // If the link is playlist, it will be m3u8 stream file, otherwise it's the mp3 file
-          if (!isURLPlaylist) {
-            // We can directly sent url to telegram
-            trackInfo.downloadLink = trackInfo.url;
-            return resolve(trackInfo);
-          } else {
-            // TrackURL for Telegram
-            // config.domain containes / at the end
-            let trackURL = `${config.domain}download/${musicName}`;
+    // If the link is playlist, it will be m3u8 stream file, otherwise it's the mp3 file
+    if (!isURLPlaylist) {
+      // We can directly sent url to telegram
+      trackInfo.downloadLink = trackInfo.url;
+    } else {
+      // Let's download track locally
 
-            // add track url to trackInfo
-            trackInfo.downloadLink = trackURL;
+      // Create random name
+      let musicName = `${Math.floor(Math.random() * 1000)}.mp3`;
 
-            // Download trackinfo
-            let download = m3u8stream(trackInfo.url).pipe(
-              // Track will be downloaded out of the src folder
-              fs.createWriteStream(`./${musicName}`)
-            );
-            download.on('open', async () => {
-              lastMessage = await ctx.telegram.editMessageText(
-                lastMessage.chat.id,
-                lastMessage.message_id,
-                undefined,
-                'downloading track(s) to our servers.'
-              );
-            });
-            download.on('close', async () => {
-              lastMessage = await ctx.telegram.editMessageText(
-                lastMessage.chat.id,
-                lastMessage.message_id,
-                undefined,
-                'track downloaded to our servers.'
-              );
-              return resolve(trackInfo);
-            });
-          }
-        });
-      })
-      .then(async trackInfo => {
-        if (lastMessage) {
-          lastMessage = ctx.telegram.editMessageText(
-            lastMessage.chat.id,
-            lastMessage.message_id,
-            undefined,
-            'Enjoy! here is your track:'
-          );
-        } else {
-          ctx.reply('Enjoy! here is your track:');
-        }
-        // Send to user
-        await ctx.replyWithAudio({
-          url: trackInfo.downloadLink,
-          filename: trackInfo.fullTitle
-        });
-      })
-      .then(() => {
-        // Update downloaded track count (secceed delivered track)
-        let updateDownloadedTrack = {
-          updatedAt: new Date(),
-          $inc: {
-            downloadedTracks: 1
-          }
-        };
-        return UserModel.findOneAndUpdate(
-          { chat_id: user.id },
-          updateDownloadedTrack
-        );
-      })
-      .catch(err => {
-        ctx.reply(err.meesage);
-        console.log(err.message);
-      });
+      // TrackURL for Telegram
+      // config.domain containes / at the end
+      let trackURL = `${config.domain}download/${musicName}`;
+
+      // add track url to trackInfo
+      trackInfo.downloadLink = trackURL;
+
+      lastMessage = await ctx.telegram.editMessageText(
+        lastMessage.chat.id,
+        lastMessage.message_id,
+        undefined,
+        'downloading track(s) to our servers ...'
+      );
+
+      await utils.downloadTrackLocally(trackInfo.url, musicName);
+    }
+
+    lastMessage = await ctx.telegram.editMessageText(
+      lastMessage.chat.id,
+      lastMessage.message_id,
+      undefined,
+      'Enjoy! here is your track:'
+    );
+
+    // Send track to user
+    // console.log(trackInfo);
+    await ctx.replyWithAudio({
+      url: trackInfo.downloadLink,
+      filename: trackInfo.fullTitle
+    });
+
+    // update downloaded track count
+    await userActions.updateDownloadedTrack(user);
   } catch (e) {
-    ctx.reply('an Error occured');
+    ctx.reply('an Error occured. Please contact @TheMasix');
     console.log(e.message);
   }
 });

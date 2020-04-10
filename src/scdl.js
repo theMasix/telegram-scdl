@@ -13,30 +13,43 @@ scdl.getTrackInfo = url => {
       process.stdout.on('data', data => {
         // console.log('data');
         buffer += decoder.write(data);
+      });
+      process.stdout.on('end', () => {
         buffer += decoder.end();
         let parse = JSON.parse(buffer);
+
+        let link = parse.url;
+        // TODO: Getting the bset download link
+        // Get the best download link of a track
+        // for (audio of parse.formats) {
+        //   // console.log(audio);
+        //   if (audio.abr === 128) {
+        //     link = audio.url;
+        //     if (audio.protocol === 'http' || audio.protocol === 'https') {
+        //       return;
+        //     }
+        //   }
+        // }
+
         let trackName = parse.uploader + ' - ' + parse.fulltitle;
 
         let result = {
           scUrl: url, // url that user provided
-          url: parse.url, // Comes from youtube-dl
+          url: link, // Comes from youtube-dl
           downloadLink: '',
           trackName: trackName,
           thumbnail: parse.thumbnail,
           fullTitle: parse.fulltitle,
           uploader: parse.uploader
         };
-        return resolve(result);
-      });
-      process.stdout.on('end', () => {
-        // console.log('end');
+        resolve(result);
       });
 
       process.on('error', err => {
-        reject(err);
+        reject(err.message);
       });
     } catch (e) {
-      reject(e);
+      reject(e.message);
     }
   });
 };
