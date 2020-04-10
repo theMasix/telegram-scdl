@@ -34,12 +34,6 @@ bot.on('text', async ctx => {
 
   let user = ctx.chat;
 
-  if (user.id != 87679709) {
-    console.log(`${user.id} messaged`);
-    await ctx.reply('The Bot is being repaired. Please come back tommorow');
-    return;
-  }
-
   try {
     await userActions.insertNewMessage(user, userMessage);
 
