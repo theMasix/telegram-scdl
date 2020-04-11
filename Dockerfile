@@ -1,4 +1,4 @@
-FROM node:10-slim
+FROM node:13-slim
 
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 
