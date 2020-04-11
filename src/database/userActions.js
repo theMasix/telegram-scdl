@@ -10,7 +10,8 @@ actions.createUser = user => {
     chat_id: user.id,
     username: user.username,
     name: user.first_name,
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    createdAt: new Date()
   };
   let updateOptions = {
     upsert: true,
