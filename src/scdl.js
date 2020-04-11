@@ -9,14 +9,21 @@ scdl.getTrackInfo = url => {
 
     try {
       let process = spawn('youtube-dl', options);
-      let buffer = '';
+      let buffer = ''; //soundcloud.com/user-349126635/sets/aerophonia
+
+      /* We get the data once and kill process after it
+       * If we get data here and then process it on 'end' event, an error may occure.
+       * i.e for this track:
+       */
+
       process.stdout.on('data', data => {
-        // console.log('data');
+        // kill the process and do not get data anymore
+        process.kill();
+
         buffer += decoder.write(data);
-      });
-      process.stdout.on('end', () => {
         buffer += decoder.end();
-        let parse = JSON.parse(buffer);
+
+        let parse = JSON.parse(data);
 
         let link = parse.url;
         // TODO: Getting the bset download link
@@ -31,25 +38,22 @@ scdl.getTrackInfo = url => {
         //   }
         // }
 
-        let trackName = parse.uploader + ' - ' + parse.fulltitle;
-
         let result = {
           scUrl: url, // url that user provided
           url: link, // Comes from youtube-dl
           downloadLink: '',
-          trackName: trackName,
           thumbnail: parse.thumbnail,
           fullTitle: parse.fulltitle,
           uploader: parse.uploader
         };
-        resolve(result);
+        return resolve(result);
       });
 
       process.on('error', err => {
         reject(err.message);
       });
-    } catch (e) {
-      reject(e.message);
+    } catch (err) {
+      reject(err.message);
     }
   });
 };

@@ -117,7 +117,7 @@ bot.on('text', async ctx => {
 
         ctx.reply('If there is any issue, please contact @TheMasix');
       } else {
-        throw e;
+        throw res;
       }
     }
 
